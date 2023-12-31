@@ -9,26 +9,29 @@ class Song:
     @classmethod
     def create_table (self):
         sql  = """
-              CREATE TABLE IF NOT EXISTS songs(
-                  id INTEGER PRIMARY KEY,
-                  name TEXT,
-                  album TEXT
+            CREATE TABLE IF NOT EXISTS songs(
+                id INTEGER PRIMARY KEY,
+                name TEXT,
+                album TEXT
               )
             """
         CURSOR.execute(sql)
+        CONN.commit() # commit changes to the database 
     
-    def save (self):
-        sql  = """
-                INSERT INTO songs (name, album)
-                VALUES (?,?)
-        """
-        CURSOR.execute(sql,(self.name, self.album))
-        
-        self.id = CURSOR.execute("SELECT last_insert_rowid() FROM songs").fetchone()[0]
+    def save(self):
+        sql = """
+            INSERT INTO songs(name,album)
+            VALUES(?,?)
+            """
+        CURSOR.execute(sql, (self.name, self.album))
+        CONN.commit()
+        self.id = CURSOR.lastrowid # get the id of the last row inserted
 
-        @classmethod
         
-        def create(cls,name,album):
-            song= Song(name,album)
-            song.save()
-            return song
+        
+    @classmethod
+    def create (cls, name, album):
+        song = Song(name, album)
+        song.save()
+        return song
+      
